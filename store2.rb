@@ -3,9 +3,38 @@ require "pstore"
 require "tty-table"
 store = PStore.new("store.pstore")
 
-store.transaction do
-  #read and write transactions.
+def update_record_count(count, pstore)
+  pstore.transaction do
+    pstore["record_count"] = count
+    pstore.commit
+  end
 end
+
+def get_record_count(pstore)
+  pstore.transaction do
+    record_count = store.fetch("record_count")
+    pstore.commit
+  end
+  return record_count
+end
+
+def update_db(snowboards, pstore)
+  pstore.transaction do
+    pstore["snowboards"] = snowboards
+    pstore.commit
+  end
+end
+
+def get_from_db(pstore)
+  pstore.transaction do
+    snowboards = store.fetch("snowboards")
+    pstore.commit
+  end
+  return snowboards
+end
+
+get_from_db(store)
+
 #initial record count. This will be used to genereate unique ids
 @record_count = 2
 # Class to create instances of snowboards that are stored in snowboards array
