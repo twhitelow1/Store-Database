@@ -53,10 +53,11 @@ snowboards = [
 # Loop through the snowboards array to build each row and then return the rendered table
 def make_table(snowboards)
   new_table = TTY::Table.new [["ID", "Brand", "Model", "Year", "Price", "In Stock?"]]
+  renderer = TTY::Table::Renderer::ASCII.new(table)
   for i in 0...snowboards.length
     new_table << ["#{snowboards[i].id}", "#{snowboards[i].brand}", "#{snowboards[i].model}", "#{snowboards[i].year}", "#{snowboards[i].price}", "#{snowboards[i].in_stock}"]
   end
-  return new_table.render(:ascii)
+  return renderer.render
 end
 
 # Get the snowboard instance from the snowboard array by id
@@ -83,7 +84,7 @@ end
 # Delete snowboard from the snowboards array
 # Use a for look to find the snowboard's index based using its id to locate it
 # When the id is matched return that index number.
-def delete_snowboard(id, snowboards)
+def delete_snowboard(snowboards)
   puts "Snowboard Id to be delete: "
   id = gets.chomp.to_i
   index = 0
@@ -118,31 +119,38 @@ def update_snowboard(snowboards)
   end
 end
 
+def create_snowboard
+  puts "Brand: "
+  new_brand = gets.chomp
+  puts "Model"
+  new_model = gets.chomp
+  puts "Year: "
+  new_year = gets.chomp
+  puts "Price: "
+  new_price = gets.chomp
+  new_snowboard = Snowboard.new((@record_count + 1), new_brand, new_model, new_year, new_price, true)
+  @record_count += 1
+  return new_snowboard
+end
+
 puts make_table(snowboards)
+
+# Program Loop. Until the input from user is q the program ask for input
+# to interact with the data
 input = ""
 until input == "q"
   puts "[c]reate    [r]ead    [u]pdate    [d]elete    [q]uit"
   input = gets.chomp
-  if input == "c"
-    puts "Brand: "
-    new_brand = gets.chomp
-    puts "Model"
-    new_model = gets.chomp
-    puts "Year: "
-    new_year = gets.chomp
-    puts "Price: "
-    new_price = gets.chomp
-    new_snowboard = Snowboard.new((@record_count + 1), new_brand, new_model, new_year, new_price, true)
-    snowboards << new_snowboard
-    @record_count += 1
-  elsif input == "r"
+  if input == "c" # c is for create
+    snowboards << create_snowboard
+  elsif input == "r" # r is for read
     puts "Snowboard id: "
     id = gets.chomp.to_i
     p get_snowboard(id, snowboards)
-  elsif input == "u"
+  elsif input == "u" # U is for update
     update_snowboard(snowboards)
-  elsif input == "d"
-    delete_snowboard(id, snowboards)
+  elsif input == "d" # d is for delete
+    delete_snowboard(snowboards)
     puts "delete"
   elsif input == "q"
     puts "quit"
